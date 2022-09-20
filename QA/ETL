@@ -1,0 +1,52 @@
+/* EXTRACT */
+
+CREATE TABLE question (
+  id serial primary key,
+  product_id integer,
+  body text,
+  date_written bigint default (extract(epoch from now()) * 1000),
+  asker_name varchar(40),
+  asker_email varchar(50),
+  reported boolean default false,
+  helpful integer default 0);
+
+CREATE TABLE answer (
+  id serial primary key,
+  question_id integer,
+  body text,
+  date_written bigint default (extract(epoch from now()) * 1000),
+  answerer_name varchar(40),
+  answerer_email varchar(50),
+  reported boolean default false,
+  helpful integer default 0,
+  CONSTRAINT fk_question FOREIGN KEY (question_id) REFERENCES question(id));
+
+CREATE TABLE photo (
+  id serial primary key,
+  answer_id integer,
+  url varchar(256),
+  CONSTRAINT fk_answer FOREIGN KEY (answer_id) REFERENCES answer(id));
+
+\copy question(id, product_id, body, date_written, asker_name, asker_email, reported, helpful) FROM './questions.csv' DELIMITER ',' CSV HEADER;
+
+\copy answer(id, question_id, body, date_written, answerer_name, answerer_email, reported, helpful) FROM './answers.csv' DELIMITER ',' CSV HEADER;
+
+\copy photo(id, answer_id, url) FROM './answers_photos.csv' DELIMITER ',' CSV HEADER;
+
+/* TRANSFORM */
+
+ALTER TABLE answer add column photos varchar[] default array[]::varchar[];
+
+select setval('question_id_seq', (select MAX(id) from question) + 1, true);
+select setval('answer_id_seq', (select MAX(id) from answer) + 1, true);
+
+CREATE INDEX answer_question_id_index ON answer (question_id);
+CREATE INDEX question_product_id ON question (product_id);
+
+/* LOAD */
+
+SELECT answer_id, array_agg(url) as url INTO groupedPhoto from photo group by answer_id;
+
+UPDATE answer a SET photos=p.url from groupedPhoto p where a.id = p.answer_id;
+
+DROP TABLE groupedPhoto;
