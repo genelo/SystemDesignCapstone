@@ -10,6 +10,6 @@ exports.voteHelpfulAnswer = async (id) => {
 //report answer
 exports.reportAnswer = async (id) => {
   const client = await db.connect();
-  await client.query(`UPDATE answer SET reported = NOT reported WHERE id = ${id};`);
+  await client.query(`UPDATE answer SET reported = true WHERE id = ${id};`);
   client.release();
 }
