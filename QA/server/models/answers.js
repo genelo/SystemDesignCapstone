@@ -8,7 +8,9 @@ exports.voteHelpfulAnswer = async (id) => {
   } catch(err){
     console.log(err);
   } finally {
-    client?.release();
+    if(client){
+      client.release();
+    }
   }
 }
 
@@ -20,6 +22,8 @@ exports.reportAnswer = async (id) => {
   } catch(err){
     console.log(err);
   } finally{
-    client?.release();
+    if(client){
+      client.release();
+    }
   }
 }
