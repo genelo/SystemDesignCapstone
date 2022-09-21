@@ -29,7 +29,7 @@ exports.getAnswersForQuestion = async (id, page, count) => {
   try {
     client = await db.connect();
     //~.3ms
-    res = await client.query(`SELECT * FROM answers where question_id = ${id};`);
+    res = await client.query(`SELECT * FROM answer where question_id = ${id};`);
     //~225ms
     // res = await client.query(`WITH groupedPhotos as ( select answer_id, array_agg(url) as url from photo where answer_id in ( select id from answer where question_id =${id}) group by answer_id) SELECT a.*, groupedPhotos.url from answer a left join groupedPhotos on a.id = groupedPhotos.answer_id where a.id in ( select id from answer where question_id = ${id}) LIMIT ${count} OFFSET ${offset};`); //~390 ms
   } catch(err){
