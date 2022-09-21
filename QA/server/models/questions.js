@@ -9,8 +9,10 @@ exports.getAllQuestionsByProductId = async (id, page, count) => {
   try {
     client = await db.connect();
     res = await client.query(`SELECT * FROM question WHERE product_id=${id} AND reported = false LIMIT ${count} OFFSET ${offset};`);
-  }finally {
-    client.release();
+  } catch(err){
+    console.log(err);
+  } finally {
+    client?.release();
   }
 
   return res.rows;
@@ -28,8 +30,10 @@ exports.getAnswersForQuestion = async (id, page, count) => {
     res = await client.query(`SELECT * FROM answers where question_id = ${id};`);
     //~225ms
     // res = await client.query(`WITH groupedPhotos as ( select answer_id, array_agg(url) as url from photo where answer_id in ( select id from answer where question_id =${id}) group by answer_id) SELECT a.*, groupedPhotos.url from answer a left join groupedPhotos on a.id = groupedPhotos.answer_id where a.id in ( select id from answer where question_id = ${id}) LIMIT ${count} OFFSET ${offset};`); //~390 ms
-  } finally {
-    client.release();
+  } catch(err){
+    console.log(err);
+  }finally {
+    client?.release();
   }
 
   return res.rows;
@@ -44,8 +48,10 @@ exports.postQuestion = async (body, name, email, product_id) => {
     const values = [product_id, body, name, email];
     client = await db.connect();
     await client.query(query, values);
+  } catch(err){
+    console.log(err);
   } finally {
-    client.release();
+    client?.release();
   }
 }
 
@@ -73,7 +79,7 @@ exports.postAnswer = async (id, body, name, email, photos = []) => {
     //await client.query('ROLLBACK');
     throw err;
   }finally {
-    client.release();
+    client?.release();
   }
 
 }
@@ -85,8 +91,10 @@ exports.voteHelpfulQuestion = async (id) => {
   try {
     client = await db.connect();
     await client.query(`UPDATE question SET helpful = helpful + 1 WHERE id = ${id};`);
+  } catch(err){
+    console.log(err);
   } finally {
-    client.release();
+    client?.release();
   }
 
 }
@@ -98,7 +106,9 @@ exports.reportQuestion = async (id) => {
   try {
     client = await db.connect();
     await client.query(`UPDATE question SET reported = true WHERE id = ${id};`);
+  } catch(err){
+    console.log(err);
   } finally {
-    client.release();
+    client?.release();
   }
 }
