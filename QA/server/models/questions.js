@@ -12,7 +12,9 @@ exports.getAllQuestionsByProductId = async (id, page, count) => {
   } catch(err){
     console.log(err);
   } finally {
-    client?.release();
+    if(client){
+      client.release();
+    }
   }
 
   return res.rows;
@@ -33,8 +35,9 @@ exports.getAnswersForQuestion = async (id, page, count) => {
   } catch(err){
     console.log(err);
   }finally {
-    client?.release();
-  }
+    if(client){
+      client.release();
+    }  }
 
   return res.rows;
 }
@@ -51,8 +54,9 @@ exports.postQuestion = async (body, name, email, product_id) => {
   } catch(err){
     console.log(err);
   } finally {
-    client?.release();
-  }
+    if(client){
+      client.release();
+    }  }
 }
 
 //post new answer
@@ -79,8 +83,9 @@ exports.postAnswer = async (id, body, name, email, photos = []) => {
     //await client.query('ROLLBACK');
     throw err;
   }finally {
-    client?.release();
-  }
+    if(client){
+      client.release();
+    }  }
 
 }
 
@@ -94,8 +99,9 @@ exports.voteHelpfulQuestion = async (id) => {
   } catch(err){
     console.log(err);
   } finally {
-    client?.release();
-  }
+    if(client){
+      client.release();
+    }  }
 
 }
 
@@ -109,6 +115,7 @@ exports.reportQuestion = async (id) => {
   } catch(err){
     console.log(err);
   } finally {
-    client?.release();
-  }
+    if(client){
+      client.release();
+    }  }
 }
